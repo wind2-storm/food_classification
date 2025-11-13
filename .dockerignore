@@ -1,0 +1,22 @@
+# ignore cache and system files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+*.DS_Store
+
+# ignore git
+.git/
+.gitignore
+
+# ignore IDE
+.idea/
+.vscode/
+
+# ignore datasets
+images_rec/
+yolo/data/food/images/
+
+# ignore models (we use external volume or mounted later)
+yolo/data/food/weights/
