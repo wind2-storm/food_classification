@@ -10,7 +10,7 @@ app = FastAPI()
 # --- Load YOLO Model ---
 BASE_DIR = "yolo/data/food"
 WEIGHTS_PATH = f"{BASE_DIR}/weights/food-dark-yolov3-tiny_3l-v3-2_last.weights"
-CFG_PATH = f"yolo/config/food-dark-yolov3-tiny.cfg"
+CFG_PATH = "yolo/config/food-dark-yolov3-tiny_3l-v3-2.cfg"
 NAMES_PATH = f"{BASE_DIR}/food-classes.names"
 
 # Load classes
