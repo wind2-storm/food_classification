@@ -33,8 +33,10 @@ CLASSES_FILE_CODE = "data/food/food-classes.codes"
 # Model_Configuration = "config/itms-dark-yolov3-tiny_3l-v3-2.cfg"
 # Model_Weights = "data/food/weights/itms-dark-yolov3-tiny_3l-v3-2_200000.weights"
 # food
-Model_Configuration = "config/food-dark-yolov3-tiny_3l-v3-2.cfg"
-Model_Weights = "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_24000.weights"
+# Model_Configuration = "config/food-dark-yolov3-tiny_3l-v3-2.cfg"
+# Model_Weights = "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_20000.weights"
+Model_Configuration = "yolo/config/food-dark-yolov3-tiny_3l-v3-2.cfg"
+Model_Weights = "yolo/data/food/weights/food-dark-yolov3-tiny_3l-v3-2_last.weights"
 # ------- full layers
 #Model_Configuration = "config/food-dark-yolov3-full-2.cfg"
 # Model_Weights = "data/food/weights/food-dark-yolov3-full-2_100000.weights"
