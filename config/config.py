@@ -13,9 +13,9 @@ Video_Start_Frame = (21-4)*60*30+(2-39)*30 # compute the first starting location
 # model base dir
 #ModelBaseDir = "C:/Users/mmc/workspace/AI_core/food_classification/yolo"
 ModelBaseDir = "./yolo"
-TEST_IMAGE_PATH ="/home/rtdatum/workspace/food_classification/images_rec/13118.jpg"
+# TEST_IMAGE_PATH ="/home/rtdatum/workspace/food_classification/images_rec/13118.jpg"
 #TEST_IMAGE_PATH ="C:/Users/mmc/workspace/AI_core/food_classification/yolo/data/쑥개떡/A240213_111121_0005.jpg"
-#TEST_IMAGE_PATH ="./yolo/data/food/images/A270309_111112_0002.jpg"
+TEST_IMAGE_PATH ="./yolo/data/food/images/A270309_111112_0002.jpg"
 TEST_VIDEO_PATH = \
     ""#"E:/Topes_data_related/시나리오 영상/시나리오 영상/20200909PM/6085-20200909-170439-1599638679.mp4"
 SHOW_TEXT_FLAG = 1
@@ -28,17 +28,5 @@ CLASSES_FILE_CODE = "data/food/food-classes.codes"
 # Give the configuration and weight files for the model and load the network using them.
 # Don't include the first directory separator
 # -- yolov3 ------
-# ------- 3 layers
 Model_Configuration = "config/food-dark-yolov3-tiny_3l-v3-2.cfg"
-Model_Weights = "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_24000.weights"
-# ------- full layers
-#Model_Configuration = "config/food-dark-yolov3-full-2.cfg"
-# Model_Weights = "data/food/weights/food-dark-yolov3-full-2_100000.weights"
-# -- yolov4 -------
-# 3l layers
-# Model_Configuration = "config/food-dark-yolov4-tiny-3l-v1.cfg"
-# Model_Weights       = "data/food/weights/food-dark-yolov4-tiny-3l-v1_best.weights"
-# full layers
-# Model_Configuration = "config/food-dark-yolov4-full.cfg"
-# Model_Weights       = "data/food/weights/food-dark-yolov4-full_10000.weights"
-
+Model_Weights = "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_last.weights"
