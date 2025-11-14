@@ -7,9 +7,12 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY requirements.txt /app/
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# 전체 프로젝트 복사
+COPY . /app/
 
+# Start command
 CMD ["python", "WebAPI.py"]
