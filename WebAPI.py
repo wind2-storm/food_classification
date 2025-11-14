@@ -56,33 +56,35 @@
 
 
 # -*- encoding: utf-8 -*-
-from flask import Flask, request
-from werkzeug.utils import secure_filename
-
+from flask import Flask, request, jsonify
 import cv2
 import numpy as np
-import base64
 import time
 
 from food_classifier_yolo import food_classifier_Json
 
 app = Flask(__name__)
 
-def recognize_image_bytes(file_storage):
-    # 파일을 numpy array로 변환
-    file_bytes = np.asarray(bytearray(file_storage.read()), dtype=np.uint8)
-    image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-    return food_classifier_Json(image=image)
-
 @app.route('/uploader', methods=['POST'])
 def upload_file():
-    if 'file' not in request.files:
-        return {"error": "file field missing"}, 400
 
-    f = request.files['file']
+    if 'file' not in request.files:
+        return jsonify({"error": "file field missing"}), 400
+
+    file_storage = request.files['file']
+    file_bytes = file_storage.read()
+
+    if not file_bytes:
+        return jsonify({"error": "empty file"}), 400
+
+    np_arr = np.frombuffer(file_bytes, np.uint8)
+    image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+
+    if image is None:
+        return jsonify({"error": "failed to decode image"}), 400
 
     t0 = time.time()
-    res = recognize_image_bytes(f)
-    print("elapsed time:", time.time() - t0)
+    result = food_classifier_Json(image)
 
-    return res
+    return jsonify(result)
+
