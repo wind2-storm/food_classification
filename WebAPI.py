@@ -65,6 +65,8 @@ from food_classifier_yolo import food_classifier_Json
 
 app = Flask(__name__)
 
+print(">>> Flask server starting...")
+
 @app.route('/uploader', methods=['POST'])
 def upload_file():
 
