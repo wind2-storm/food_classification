@@ -55,17 +55,21 @@
 #
 
 
+print(">>> Import OK: Starting WebAPI.py")
+
 # -*- encoding: utf-8 -*-
 from flask import Flask, request, jsonify
 import cv2
 import numpy as np
 import time
 
+print(">>> Flask server starting...")
+
 from food_classifier_yolo import food_classifier_Json
+print(">>> food_classifier_yolo imported successfully")
+
 
 app = Flask(__name__)
-
-print(">>> Flask server starting...")
 
 @app.route('/uploader', methods=['POST'])
 def upload_file():
