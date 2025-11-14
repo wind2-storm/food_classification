@@ -29,4 +29,4 @@ CLASSES_FILE_CODE = "data/food/food-classes.codes"
 # Don't include the first directory separator
 # -- yolov3 ------
 Model_Configuration = "config/food-dark-yolov3-tiny_3l-v3-2.cfg"
-Model_Weights = "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_last.weights"
+Model_Weights = "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_24000.weights"
