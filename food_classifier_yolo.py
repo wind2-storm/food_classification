@@ -43,13 +43,13 @@ inpHeight       = config.INPHEIGHT # 32*9 # 608     #Height of network's input i
 modelBaseDir    = config.ModelBaseDir # "C:/Users/mmc/workspace/yolo"
 
 # Load names of classes from a file
-classesFile = os.path.sep.join([modelBaseDir, config.CLASSES_FILE])
+classesFile = config.CLASSES_FILE
 classes = None
 with open(classesFile, 'rt', encoding='utf-8') as f:
     classes = f.read().rstrip('\n').split('\n')
 
 # Load codes of classes from a file
-classes_File_Codes = os.path.sep.join([modelBaseDir, config.CLASSES_FILE_CODE])
+classes_File_Codes = config.CLASSES_FILE_CODE
 classes_codes = None
 with open(classes_File_Codes, 'rt', encoding='utf-8') as f:
     classes_codes = f.read().rstrip('\n').split('\n')
@@ -57,8 +57,8 @@ with open(classes_File_Codes, 'rt', encoding='utf-8') as f:
 assert (len(classes) == len(classes_codes))
 
 # model configuration and weights paths
-modelConfiguration = os.path.sep.join([modelBaseDir, config.Model_Configuration])
-modelWeights = os.path.sep.join([modelBaseDir, config.Model_Weights])
+modelConfiguration = config.Model_Configuration
+modelWeights = config.Model_Weights
 
 # load a given model
 net = cv.dnn.readNetFromDarknet(modelConfiguration, modelWeights)
@@ -67,10 +67,22 @@ net.setPreferableTarget(cv.dnn.DNN_TARGET_OPENCL_FP16)
 
 # Get the names of the output layers
 def getOutputsNames(net):
-    # Get the names of all the layers in the network
     layersNames = net.getLayerNames()
-    # Get the names of the output layers, i.e. the layers with unconnected outputs
-    return [layersNames[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    outLayers = net.getUnconnectedOutLayers()
+
+    # OpenCV 3.x: [[200], [267], [400]]
+    # OpenCV 4.x 이상: [200, 267, 400]
+    names = []
+
+    for i in outLayers:
+        if isinstance(i, (list, tuple, np.ndarray)):
+            idx = i[0] - 1
+        else:
+            idx = i - 1
+        names.append(layersNames[idx])
+
+    return names
+
 
 # Draw the predicted bounding box
 def drawPred(frame, classId, conf, left, top, right, bottom):
@@ -111,75 +123,97 @@ def postprocess(frame, outs, showimg=False):
     frameHeight = frame.shape[0]
     frameWidth = frame.shape[1]
 
-    # Scan through all the bounding boxes output from the network and keep only the
-    # ones with high confidence scores. Assign the box's class label as the class with the highest score.
     classIds = []
     confidences = []
     boxes = []
+
     for out in outs:
         if(args.showText):
             print("out.shape : ", out.shape)
         for detection in out:
-            # if detection[4]>0.001:
             scores = detection[5:]
             classId = np.argmax(scores)
-            # if scores[classId]>confThreshold:
             confidence = scores[classId]
-            if detection[4] >= confThreshold:
-                if(args.showText):
-                    print('obj score: ', detection[4], " - confidence:", scores[classId], " - thres : ", confThreshold)
-                    #print(detection)
-            if confidence >= confThreshold:
+
+            if detection[4] >= confThreshold and confidence >= confThreshold:
                 center_x = int(detection[0] * frameWidth)
                 center_y = int(detection[1] * frameHeight)
                 width = int(detection[2] * frameWidth)
                 height = int(detection[3] * frameHeight)
+
                 left = int(center_x - width / 2)
                 top = int(center_y - height / 2)
+
                 classIds.append(classId)
                 confidences.append(float(confidence))
                 boxes.append([left, top, width, height])
-                # cv.rectangle(frame, (left, top), (left+width, top+height), (255, 0, 255),2)
-                # cv.imshow('test', frame)
-                # cv.waitKey(1)
 
-    # Perform non maximum suppression to eliminate redundant overlapping boxes with
-    # lower confidences.
+        # Perform non maximum suppression to eliminate redundant overlapping boxes with lower confidences.
     indices = cv.dnn.NMSBoxes(boxes, confidences, confThreshold, nmsThreshold)
-    rests =[]
+
+    rests = []
+
+    # ✔ indices가 scalar / 1D / 2D / empty 여부 확인 후 정규화
+    if len(indices) == 0:
+        return rests  # detection 없음
+
+    # numpy array인 경우 flatten()
+    if hasattr(indices, "flatten"):
+        indices = indices.flatten().tolist()
+    else:
+        # scalar이면 list로 변환
+        indices = [indices]
+
+    # ✔ 이제 indices는 항상 [0, 2, 5] 같은 리스트 형태
     for i in indices:
-        i = i[0]
         box = boxes[i]
-        left = box[0]
-        top = box[1]
-        width = box[2]
-        height = box[3]
-        rests.append([classIds[i], left, top, width, height, frameWidth, frameHeight])
-        if(showimg):
+        left, top, width, height = box
+
+        # confidence 출력
+        print(f"FINAL CLASS: {classes[classIds[i]]}, CONFIDENCE: {confidences[i]:.4f}")
+
+        rests.append([
+            classIds[i],
+            left,
+            top,
+            width,
+            height,
+            frameWidth,
+            frameHeight,
+            confidences[i]   # ← 필요하면 JSON에 넣기 위해 추가
+        ])
+
+        if showimg:
             drawPred(frame, classIds[i], confidences[i], left, top, left + width, top + height)
 
     return rests
 
-def food_classifier_Json(image):
-    # do somthing
-    print(args.showText)
-    locations = food_classifier_pipeline(frame=image) #[(2321, 0, 0, 10, 10)] # list of (id, rect) from classfication
-    jsons = []
-    for j,location in enumerate(locations):
-        class_id, x, y, width, height, framewidth, frameheight =location
-        res_json = {}
-        res_json["ClassID"] = classes_codes[class_id] # code , class_id (training class)
-        res_json["ClassName"] = classes[class_id]
-        res_json["x"] = int(x)
-        res_json["y"] = int(y)
-        res_json["w"] = int(width)
-        res_json["h"] = int(height)
-        res_json["framewidth"] = int(framewidth)
-        res_json["frameheight"]= int(frameheight)
-        jsons.append(res_json)
-    print(json.dumps(jsons,ensure_ascii=False))
 
-    return json.dumps(jsons,ensure_ascii=False)
+
+def food_classifier_Json(image):
+    locations = food_classifier_pipeline(frame=image)
+    jsons = []
+
+    for j, location in enumerate(locations):
+        class_id, x, y, width, height, framewidth, frameheight, confidence = location
+
+        res_json = {
+            "ClassID": classes_codes[class_id],
+            "ClassName": classes[class_id],
+            "x": int(x),
+            "y": int(y),
+            "w": int(width),
+            "h": int(height),
+            "framewidth": int(framewidth),
+            "frameheight": int(frameheight),
+            "confidence": float(confidence)
+        }
+
+        jsons.append(res_json)
+
+    print(json.dumps(jsons, ensure_ascii=False))
+    return json.dumps(jsons, ensure_ascii=False)
+
 
 def food_classifier_pipeline(frame):
 

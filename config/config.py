@@ -1,32 +1,32 @@
 # no package for independent configuration management
+import os
+
+# config.py가 config/ 폴더 안에 있으므로, 두 단계 상위가 프로젝트 루트
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Initialize the parameters
-CONF_THRES = 0.1 #0.5  # Confidence threshold
-NMS_THRES  = 0.1 #0.4  # Non-maximum suppression threshold
+CONF_THRES = 0.1
+NMS_THRES  = 0.1
 
-INPWIDTH  = 416 # 32*10  # 608     #Width of network's input image # 320(32*10)
-INPHEIGHT = 416 #32*9 # 608     #Height of network's input image # 288(32*9) best
+INPWIDTH  = 416
+INPHEIGHT = 416
 
-# start video frame number
-Video_Start_Frame = (21-4)*60*30+(2-39)*30 # compute the first starting location from a video
+Video_Start_Frame = (21-4)*60*30+(2-39)*30
 
-# model base dir
-#ModelBaseDir = "C:/Users/mmc/workspace/AI_core/food_classification/yolo"
-ModelBaseDir = "./yolo"
-# TEST_IMAGE_PATH ="/home/rtdatum/workspace/food_classification/images_rec/13118.jpg"
-#TEST_IMAGE_PATH ="C:/Users/mmc/workspace/AI_core/food_classification/yolo/data/쑥개떡/A240213_111121_0005.jpg"
-TEST_IMAGE_PATH ="./yolo/data/food/images/A270309_111112_0002.jpg"
-TEST_VIDEO_PATH = \
-    ""#"E:/Topes_data_related/시나리오 영상/시나리오 영상/20200909PM/6085-20200909-170439-1599638679.mp4"
+# model base directory (절대경로)
+ModelBaseDir = os.path.join(BASE_DIR, "yolo")
+
+# 테스트 파일
+TEST_IMAGE_PATH = os.path.join(ModelBaseDir, "data/food_images/A250101_111424_0032.jpg")
+TEST_VIDEO_PATH = ""
+
 SHOW_TEXT_FLAG = 1
 PS_FLAG = 1
 
-# Load names of classes, please don't include the first directory separator like "/data/..."
-CLASSES_FILE = "data/food/food-classes.names"
-CLASSES_FILE_CODE = "data/food/food-classes.codes"
+# classes & codes 파일
+CLASSES_FILE = os.path.join(ModelBaseDir, "data/food/food-classes.names")
+CLASSES_FILE_CODE = os.path.join(ModelBaseDir, "data/food/food-classes.codes")
 
-# Give the configuration and weight files for the model and load the network using them.
-# Don't include the first directory separator
-# -- yolov3 ------
-Model_Configuration = "config/food-dark-yolov3-tiny_3l-v3-2.cfg"
-Model_Weights = "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_24000.weights"
+# YOLO config + weights
+Model_Configuration = os.path.join(ModelBaseDir, "config/food-dark-yolov3-tiny_3l-v3-2.cfg")
+Model_Weights = os.path.join(ModelBaseDir, "data/food/weights/food-dark-yolov3-tiny_3l-v3-2_24000.weights")
